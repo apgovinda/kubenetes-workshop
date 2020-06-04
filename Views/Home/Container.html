@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<!-- saved from url=(0095)https://kubernetes-workshop.education.pivotal.io/kubernetes/deploying-first-container/demo.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="course version" content="1.0.5">
+<meta name="generator" content="io.pivotal.pal.shipkin:shipkin-plugin:7.3.2, https://github.com/platform-acceleration-lab/shipkin">
+<meta name="generated on" content="2018-11-26T22:53:05.778Z">
+<meta name="theme-color" content="#216eb9">
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Kubernetes Workshop</title>
+
+<link rel="icon" href="https://kubernetes-workshop.education.pivotal.io/images/favicon.png">
+
+<link rel="stylesheet" href="./Container_files/reset.css">
+<link rel="stylesheet" href="./Container_files/theme.css">
+<link rel="stylesheet" href="./Container_files/highlight.js.min.css">
+<link rel="stylesheet" href="./Container_files/github.css">
+
+<style>
+    @import url(''https://fonts.googleapis.com/css?family=Raleway:500,500i,700,700i'');
+
+    #header {
+        border-color: #216eb9;
+        background-color: #216eb9;
+    }
+
+    .disclaimer {
+        background-color: #216eb9;
+    }
+
+    footer {
+        background-color: #216eb9;
+    }
+
+    .label.label-default {
+        background-color: #216eb9;
+    }
+
+    a {
+        color: #216eb9;
+    }
+
+    th {
+        background-color: #216eb9;
+        border-color: #216eb9;
+    }
+
+    blockquote:before {
+        color: #216eb9;
+    }
+
+    .label.label-default:hover, .label.label-default:focus {
+        background-color: #307dc8;
+    }
+
+    a:hover, a:focus {
+        color: #307dc8;
+    }
+
+    .slide {
+        color: #216eb9;
+    }
+
+    .slide h2, .slide label {
+        color: #216eb9;
+    }
+
+    .slide input {
+        color: rgba(33, 110, 185, 0.65);
+    }
+
+    .face path {
+        fill: #216eb9;
+    }
+
+    body {
+        background-color: #FFFFFF;
+    }
+
+    .slide {
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .slide.text {
+        background-color: #FFFFFF;
+    }
+
+    .slide h2, .slide label {
+        color: inherit;
+    }
+
+
+    html, body {
+        font-family: 'Raleway', sans-serif;
+    }
+
+    .slide:before {
+        background-image: url(../..);
+        background-size: contain;
+        background-repeat: no-repeat;
+        content: "";
+
+        height: 120px;
+        width: 115px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+    }
+</style>
+
+<link rel="stylesheet" href="./Container_files/custom.css">
+</head>
+<body>
+
+
+<style>
+    header {
+        border-bottom: #216eb9 18px solid;
+    }
+</style>
+
+<header>
+    <img src="./Container_files/kubernetes-workshop.svg" alt="Kubernetes Workshop">
+</header>
+
+
+<a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSeGlwaSfHtPCZ0toxnjxZAGS5frhS6xXyZkxFxwvodAEmIhYA/viewform?entry.31443528=https://kubernetes-workshop.education.pivotal.io/kubernetes/deploying-first-container/demo.html" data-url-field="entry.31443528" target="_blank" rel="noreferrer noopener">
+    <button>feedback</button>
+</a>
+
+<main id="main">
+
+    <div id="content" class="container">
+        <article>
+ <h1 id="deploying-your-first-container">Deploying Your First Container</h1>
+<p>In order to deploy our first container we must use a Pod. A Pod is a Kubernetes abstraction that represents a group of one or more application containers (such as Docker or rkt), and some shared resources for those containers.</p>
+<h2 id="deploy-your-first-pod">Deploy your first pod</h2>
+<ol>
+<li>
+<p>Lets create our very first container application in the cluster.  To do this we'll use the kubectl <em>run</em> command to create a single pod:</p>
+<pre><code class="hljs ruby"> $ kubectl run -i --tty ubuntu --image=<span class="hljs-symbol">ubuntu:</span><span class="hljs-number">16.04</span> --restart=Never -- <span class="hljs-regexp">/bin/bash</span> -il
+ If you don<span class="hljs-string">'t see a command prompt, try pressing enter.
+ root@ubuntu:/#
+</span></code></pre>
+</li>
+<li>
+<p>We've obtained an interactive shell into our container.  Feel free to poke around this Ubuntu container.  You can see it is started with minimal process by retrieving a process list:</p>
+<pre><code class="hljs ruby"> root@ubuntu<span class="hljs-symbol">:/</span><span class="hljs-comment"># echo "My First Container"</span>
+ My First Container
+
+ root@ubuntu<span class="hljs-symbol">:/</span><span class="hljs-comment"># ps aux</span>
+ USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+ root         <span class="hljs-number">1</span>  <span class="hljs-number">0</span>.<span class="hljs-number">0</span>  <span class="hljs-number">0</span>.<span class="hljs-number">0</span>  <span class="hljs-number">18248</span>  <span class="hljs-number">3236</span> ?        S&lt;s  <span class="hljs-number">21</span><span class="hljs-symbol">:</span><span class="hljs-number">07</span>   <span class="hljs-number">0</span><span class="hljs-symbol">:</span><span class="hljs-number">00</span> /bin/bash -il
+ root        <span class="hljs-number">10</span>  <span class="hljs-number">0</span>.<span class="hljs-number">0</span>  <span class="hljs-number">0</span>.<span class="hljs-number">0</span>  <span class="hljs-number">34424</span>  <span class="hljs-number">2820</span> ?        R&lt;+  <span class="hljs-number">21</span><span class="hljs-symbol">:</span><span class="hljs-number">07</span>   <span class="hljs-number">0</span><span class="hljs-symbol">:</span><span class="hljs-number">00</span> ps aux
+</code></pre>
+</li>
+<li>
+<p>You can also view details about the running pod by selecting the <em>Pods</em> link on the lefthand menu within the dashboard application.  Additionally, try clicking the pod you created (named 'Ubuntu') in the dashboard.  Click the <em>Logs</em> icon near the top right of the screen.  What do you see?  It appears to be an identical log output to what you have in your terminal window!</p>
+<p><img src="./Container_files/01-2.png" alt="Pod Details" class="figure">
+<img src="./Container_files/01-3.png" alt="Pod Details" class="figure"></p>
+</li>
+<li>
+<p>Lastly, you can use the kubectl CLI to retrieve details about the running pod.  Open a new command window and use the <em>get</em> and <em>details</em> commands to view varying levels of details about your deployed pod:
+$ kubectl get pod ubuntu -o wide
+NAME      READY     STATUS    RESTARTS   AGE       IP            NODE
+ubuntu    1/1       Running   0          9m        10.200.24.3   vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</p>
+<pre><code class="hljs yaml"> <span class="hljs-string">$</span> <span class="hljs-string">kubectl</span> <span class="hljs-string">describe</span> <span class="hljs-string">pod</span> <span class="hljs-string">ubuntu</span>
+<span class="hljs-attr"> Name:</span>         <span class="hljs-string">ubuntu</span>
+<span class="hljs-attr"> Namespace:</span>    <span class="hljs-string">default</span>
+<span class="hljs-attr"> Node:</span>         <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1/10.0.16.11</span>
+ <span class="hljs-string">Start</span> <span class="hljs-attr">Time:</span>   <span class="hljs-string">Tue,</span> <span class="hljs-number">16</span> <span class="hljs-string">Jan</span> <span class="hljs-number">2018</span> <span class="hljs-number">16</span><span class="hljs-string">:07:06</span> <span class="hljs-bullet">-0500</span>
+<span class="hljs-attr"> Labels:</span>       <span class="hljs-string">run=ubuntu</span>
+<span class="hljs-attr"> Annotations:</span>  <span class="hljs-string">&lt;none&gt;</span>
+<span class="hljs-attr"> Status:</span>       <span class="hljs-string">Running</span>
+<span class="hljs-attr"> IP:</span>           <span class="hljs-number">10.200</span><span class="hljs-number">.24</span><span class="hljs-number">.3</span>
+<span class="hljs-attr"> Containers:</span>
+<span class="hljs-attr">   ubuntu:</span>
+     <span class="hljs-string">Container</span> <span class="hljs-attr">ID:</span>  <span class="hljs-attr">docker://b9919fa275d6250a484e6ef68a66e82ef2c3070fc9475216a8e87f1bd8c73a44</span>
+<span class="hljs-attr">     Image:</span>         <span class="hljs-attr">ubuntu:16.04</span>
+     <span class="hljs-string">Image</span> <span class="hljs-attr">ID:</span>      <span class="hljs-attr">docker-pullable://ubuntu@sha256:d3fdf5b1f8e8a155c17d5786280af1f5a04c10e95145a515279cf17abdf0191f</span>
+<span class="hljs-attr">     Port:</span>          <span class="hljs-string">&lt;none&gt;</span>
+<span class="hljs-attr">     Args:</span>
+       <span class="hljs-string">/bin/bash</span>
+<span class="hljs-bullet">       -</span><span class="hljs-string">il</span>
+<span class="hljs-attr">     State:</span>          <span class="hljs-string">Running</span>
+<span class="hljs-attr">       Started:</span>      <span class="hljs-string">Tue,</span> <span class="hljs-number">16</span> <span class="hljs-string">Jan</span> <span class="hljs-number">2018</span> <span class="hljs-number">16</span><span class="hljs-string">:07:15</span> <span class="hljs-bullet">-0500</span>
+<span class="hljs-attr">     Ready:</span>          <span class="hljs-literal">True</span>
+     <span class="hljs-string">Restart</span> <span class="hljs-attr">Count:</span>  <span class="hljs-number">0</span>
+<span class="hljs-attr">     Environment:</span>    <span class="hljs-string">&lt;none&gt;</span>
+<span class="hljs-attr">     Mounts:</span>
+       <span class="hljs-string">/var/run/secrets/kubernetes.io/serviceaccount</span> <span class="hljs-string">from</span> <span class="hljs-string">default-token-rwdps</span> <span class="hljs-string">(ro)</span>
+<span class="hljs-attr"> Conditions:</span>
+   <span class="hljs-string">Type</span>           <span class="hljs-string">Status</span>
+   <span class="hljs-string">Initialized</span>    <span class="hljs-literal">True</span>
+   <span class="hljs-string">Ready</span>          <span class="hljs-literal">True</span>
+   <span class="hljs-string">PodScheduled</span>   <span class="hljs-literal">True</span>
+<span class="hljs-attr"> Volumes:</span>
+<span class="hljs-attr">   default-token-rwdps:</span>
+<span class="hljs-attr">     Type:</span>        <span class="hljs-string">Secret</span> <span class="hljs-string">(a</span> <span class="hljs-string">volume</span> <span class="hljs-string">populated</span> <span class="hljs-string">by</span> <span class="hljs-string">a</span> <span class="hljs-string">Secret)</span>
+<span class="hljs-attr">     SecretName:</span>  <span class="hljs-string">default-token-rwdps</span>
+<span class="hljs-attr">     Optional:</span>    <span class="hljs-literal">false</span>
+ <span class="hljs-string">QoS</span> <span class="hljs-attr">Class:</span>       <span class="hljs-string">BestEffort</span>
+<span class="hljs-attr"> Node-Selectors:</span>  <span class="hljs-string">&lt;none&gt;</span>
+<span class="hljs-attr"> Tolerations:</span>     <span class="hljs-string">&lt;none&gt;</span>
+<span class="hljs-attr"> Events:</span>
+   <span class="hljs-string">Type</span>    <span class="hljs-string">Reason</span>                 <span class="hljs-string">Age</span>   <span class="hljs-string">From</span>                                              <span class="hljs-string">Message</span>
+<span class="hljs-bullet">   -</span><span class="hljs-meta">---</span>    <span class="hljs-bullet">------</span>                 <span class="hljs-bullet">----</span>  <span class="hljs-bullet">----</span>                                              <span class="hljs-bullet">-------</span>
+   <span class="hljs-string">Normal</span>  <span class="hljs-string">Scheduled</span>              <span class="hljs-number">10</span><span class="hljs-string">m</span>   <span class="hljs-string">default-scheduler</span>                                 <span class="hljs-string">Successfully</span> <span class="hljs-string">assigned</span> <span class="hljs-string">ubuntu</span> <span class="hljs-string">to</span> <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</span>
+   <span class="hljs-string">Normal</span>  <span class="hljs-string">SuccessfulMountVolume</span>  <span class="hljs-number">10</span><span class="hljs-string">m</span>   <span class="hljs-string">kubelet,</span> <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</span>  <span class="hljs-string">MountVolume.SetUp</span> <span class="hljs-string">succeeded</span> <span class="hljs-string">for</span> <span class="hljs-string">volume</span> <span class="hljs-string">"default-token-rwdps"</span>
+   <span class="hljs-string">Normal</span>  <span class="hljs-string">Pulling</span>                <span class="hljs-number">10</span><span class="hljs-string">m</span>   <span class="hljs-string">kubelet,</span> <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</span>  <span class="hljs-string">pulling</span> <span class="hljs-string">image</span> <span class="hljs-string">"ubuntu:16.04"</span>
+   <span class="hljs-string">Normal</span>  <span class="hljs-string">Pulled</span>                 <span class="hljs-number">10</span><span class="hljs-string">m</span>   <span class="hljs-string">kubelet,</span> <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</span>  <span class="hljs-string">Successfully</span> <span class="hljs-string">pulled</span> <span class="hljs-string">image</span> <span class="hljs-string">"ubuntu:16.04"</span>
+   <span class="hljs-string">Normal</span>  <span class="hljs-string">Created</span>                <span class="hljs-number">10</span><span class="hljs-string">m</span>   <span class="hljs-string">kubelet,</span> <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</span>  <span class="hljs-string">Created</span> <span class="hljs-string">container</span>
+   <span class="hljs-string">Normal</span>  <span class="hljs-string">Started</span>                <span class="hljs-number">10</span><span class="hljs-string">m</span>   <span class="hljs-string">kubelet,</span> <span class="hljs-string">vm-623978bf-6ccc-412e-5673-ee7fc5d3d4a1</span>  <span class="hljs-string">Started</span> <span class="hljs-string">container</span>
+</code></pre>
+</li>
+</ol>
+         </article>
+        <div class="sidebar-container">
+<nav id="sidebar" class="">
+    <div class="title">
+        <a href="https://kubernetes-workshop.education.pivotal.io/index.html">Return to Kubernetes Workshop</a>
+    </div>
+    <div class="content">
+        <a href="https://kubernetes-workshop.education.pivotal.io/kubernetes/deploying-first-container/demo.html#">Back to top</a>
+
+<ul>
+        <li>
+        <a href="https://kubernetes-workshop.education.pivotal.io/kubernetes/deploying-first-container/demo.html#deploying-your-first-container">Deploying Your First Container</a>
+
+<ul>
+        <li>
+        <a href="https://kubernetes-workshop.education.pivotal.io/kubernetes/deploying-first-container/demo.html#deploy-your-first-pod">Deploy your first pod</a>
+
+        </li>
+</ul>
+        </li>
+</ul>
+    </div>
+</nav>
+        </div>
+    </div>
+</main>
+
+
+<div class="slide" data-slide="1">
+    <h1>Kubernetes Workshop</h1>
+        <ul>
+                <li>Five S's</li>
+                <li><strong>Stability</strong></li>
+                <li><strong>Security</strong></li>
+                <li><strong>Scalability</strong></li>
+                <li><strong>Speed</strong></li>
+                <li><strong>Savings</strong></li>
+        </ul>
+</div>
+
+<div class="slide transparent" data-slide="2">
+    <h1>Get started!</h1>
+</div>
+
+<div class="slide" data-slide="3">
+    <h1>Wrap up</h1>
+        <ul>
+                <li>Five S's</li>
+                <li><strong>Stability</strong></li>
+                <li><strong>Security</strong></li>
+                <li><strong>Scalability</strong></li>
+                <li><strong>Speed</strong></li>
+                <li><strong>Savings</strong></li>
+        </ul>
+
+    <div class="faces">
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M13,9.94L14.06,11L15.12,9.94L16.18,11L17.24,9.94L15.12,7.82L13,9.94M8.88,9.94L9.94,11L11,9.94L8.88,7.82L6.76,9.94L7.82,11L8.88,9.94M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"></path>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11M15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M9,14H15A1,1 0 0,1 16,15A1,1 0 0,1 15,16H9A1,1 0 0,1 8,15A1,1 0 0,1 9,14Z"></path>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M16.18,7.76L15.12,8.82L14.06,7.76L13,8.82L14.06,9.88L13,10.94L14.06,12L15.12,10.94L16.18,12L17.24,10.94L16.18,9.88L17.24,8.82L16.18,7.76M7.82,12L8.88,10.94L9.94,12L11,10.94L9.94,9.88L11,8.82L9.94,7.76L8.88,8.82L7.82,7.76L6.76,8.82L7.82,9.88L6.76,10.94L7.82,12M12,14C9.67,14 7.69,15.46 6.89,17.5H17.11C16.31,15.46 14.33,14 12,14Z"></path>
+        </svg>
+    </div>
+</div>
+
+<div class="slide text" data-slide="4">
+    <div class="inner">
+        <h1>Instructor notes</h1>
+        notes...
+    </div>
+</div>
+
+<div class="slide lemon-squeezy" data-slide="7">
+    <h1>Easy peasy</h1>
+    <h1>lemon squeezy!</h1>
+</div>
+
+<div class="slide" data-slide="8">
+    <h1>Lunch time!</h1>
+    <label for="lunch-end">will return</label>
+    <input type="text" name="lunch-end" data-time="">
+</div>
+
+<div class="slide" data-slide="9">
+    <h1>Break time!</h1>
+    <label for="break-end">will return</label>
+    <input type="text" name="break-end" data-time="">
+</div>
+
+<audio src="../../audio/gong.mp3" id="gong" preload="">
+</audio>
+
+<div class="slide" data-slide="?">
+    <h2>Keyboard shortcuts</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Key</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Show <em>introduction</em> slide</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Show <em>get started</em> slide</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Show <em>wrap up</em> slide</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Show <em>instructor notes</em></td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Easy peasy</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Show <em>lunch time</em> slide</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Show <em>break time</em> slide</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>Play gong sound</td>
+        </tr>
+        <tr>
+            <td>x</td>
+            <td>Close slide</td>
+        </tr>
+        <tr>
+            <td>?</td>
+            <td>Show this help message</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <div>
+        © Copyright 2018 Pivotal Software, Inc. All Rights Reserved. •
+        <a href="https://pivotal.io/privacy-policy" rel="noreferrer noopener">Privacy Policy</a> •
+        <a href="https://pivotal.io/legal" rel="noreferrer noopener">Terms of Use</a>
+    </div>
+    <div>
+        <label class="hidden-checkbox">
+            <input type="checkbox" id="instructor-mode">
+            <span>course version: 1.0.5<sup class="check">IM</sup></span>
+        </label>
+    </div>
+</footer>
+
+<script src="./Container_files/highlight.pack.js.download"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="./Container_files/shipkin.js.download"></script>
+<script src="./Container_files/slides.js.download"></script>
+
+
+
+
+</body></html>
